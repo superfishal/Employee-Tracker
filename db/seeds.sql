@@ -1,5 +1,5 @@
 -- pre-populate database
-use employees;
+USE employees;
 
 INSERT INTO department (department_name) 
 VALUES 
