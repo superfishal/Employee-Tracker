@@ -1,14 +1,14 @@
 -- pre-populate database
-USE employees;
+USE employees_db;
 
-INSERT INTO department (department_name) 
+INSERT INTO department (name) 
 VALUES 
 ('Sales'),
 ('Finance'),
 ('Human Resources'),
 ('Operations');
 
-INSERT INTO roles (title, salary, department_id) 
+INSERT INTO role (title, salary, department_id) 
 VALUES
 ('Sales Manager', 80000, 1),
 ('Sales Associate', 50000, 1),
@@ -19,7 +19,7 @@ VALUES
 ('Operations Manager', 105000, 4),
 ('Operations Specialist', 95000, 4);
 
-INSERT INTO employees (first_name, last_name, role_id, manager_id)
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
 ('Fred', 'Sanders', 1, NULL),
 ('Nicole', 'Rivera', 2, 1),

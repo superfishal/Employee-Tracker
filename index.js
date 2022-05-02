@@ -1,4 +1,3 @@
-const connection = require("./db/connection.js");
 const inquirer = require("inquirer");
 const db = require("./db");
 require("console.table");
@@ -33,7 +32,7 @@ const inquirerPrompts = () => {
           // job title, role id, department, and salary
           viewRoles();
           break;
-        case "View all employees":
+        case "View all Employees":
           // employee ids, first name, last name, job titles, departments, salaries, managers of the employee
           viewEmployees();
           break;
@@ -54,30 +53,68 @@ const inquirerPrompts = () => {
       }
     });
 };
-// const viewDepartments = () => {
-//   class DB {
-//     // references the connection
-//     constructor(connection) {
-//         this.connection = connection;
-//     };
-
-//     // find all departments method
-//     findAllDepartments() {
-//         return this.connection.promise().query("SELECT department.id, department.name AS department FROM department;");
-//     };
-//   }
-// db.findAllDepartments()
-// // parse the query for readability
-// .then(([rows]) => {
-//     let departments = rows;
-//     console.table(departments);
-// })
-// .then(() => mainPrompts());
-// };
-const viewRoles = () => {};
-const viewEmployees = () => {};
-const addDepartment = () => {};
-const addRole = () => {};
+const viewDepartments = () => {
+  db.findAllDepartments()
+    .then(([departments]) => {
+      console.table(departments);
+    })
+    .then(() => {
+      inquirerPrompts();
+    });
+};
+const viewRoles = () => {
+  db.findAllRoles()
+    .then(([roles]) => {
+      console.table(roles);
+    })
+    .then(() => {
+      inquirerPrompts();
+    });
+};
+const viewEmployees = () => {
+  db.findAllEmployees()
+    .then(([employees]) => {
+      console.table(employees);
+    })
+    .then(() => {
+      inquirerPrompts();
+    });
+};
+const addDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "What's the name of the new department?",
+      },
+    ])
+    .then((answer) => {
+      db.addDepartment(answer)
+        .then(() =>
+          console.log(
+            `${answer.name} department has been added to the Database`
+          )
+        )
+        .then(() => inquirerPrompts());
+    });
+};
+const addRole = () => {
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "What's the name of the new role?",
+    },
+    { type: "number", name: "salary", message: "What's the salary?" },
+    {
+      type: "list",
+      name: "departmentID",
+      message: "Which department does this role belong to?",
+      choices: [],
+    },
+  ]);
+};
 const addEmployee = () => {};
 const updateEmployee = () => {};
 const quitProgram = () => {
