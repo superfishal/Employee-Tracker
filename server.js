@@ -1,5 +1,6 @@
-const db = require("./db/connection.js");
+const connection = require("./db/connection.js");
 const inquirer = require("inquirer");
+const db = require("./db");
 require("console.table");
 
 const inquirerPrompts = () => {
@@ -53,7 +54,26 @@ const inquirerPrompts = () => {
       }
     });
 };
-const viewDepartments = () => {};
+// const viewDepartments = () => {
+//   class DB {
+//     // references the connection
+//     constructor(connection) {
+//         this.connection = connection;
+//     };
+
+//     // find all departments method
+//     findAllDepartments() {
+//         return this.connection.promise().query("SELECT department.id, department.name AS department FROM department;");
+//     };
+//   }
+// db.findAllDepartments()
+// // parse the query for readability
+// .then(([rows]) => {
+//     let departments = rows;
+//     console.table(departments);
+// })
+// .then(() => mainPrompts());
+// };
 const viewRoles = () => {};
 const viewEmployees = () => {};
 const addDepartment = () => {};
