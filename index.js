@@ -155,7 +155,7 @@ const addEmployee = () => {
             db.findAllEmployees()
               .then(([employees]) => {
                 const managerArray = employees.map(
-                  ({ id, firt_name, last_name }) => ({
+                  ({ id, first_name, last_name }) => ({
                     name: `${first_name} ${last_name}`,
                     value: id,
                   })
