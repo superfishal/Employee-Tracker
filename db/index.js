@@ -7,9 +7,7 @@ class DB {
   findAllDepartments() {
     return this.connection
       .promise()
-      .query(
-        "SELECT department.id, department.name AS department FROM department;"
-      );
+      .query("SELECT department.id, department.name FROM department;");
   }
   findAllRoles() {
     return this.connection
