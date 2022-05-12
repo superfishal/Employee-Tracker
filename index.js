@@ -15,7 +15,8 @@ const inquirerPrompts = () => {
         "Add a department",
         "Add a role",
         "Add an Employee",
-        "Update an Employee role",
+        "Update an Employee manager",
+        "Update an Employees role",
         "Exit the program",
       ],
     },
@@ -42,8 +43,11 @@ const inquirerPrompts = () => {
       case "Add an Employee":
         addEmployee();
         break;
-      case "Update an Employee role":
-        updateEmployee();
+      case "Update an Employee manager":
+        updateEmployeeManager();
+        break;
+      case "Update an Employees role":
+        updateEmployeeRole();
         break;
       default:
         quitProgram();
@@ -143,8 +147,8 @@ const addEmployee = () => {
     let firstName = answers.firstName;
     let lastName = answers.lastName;
     db.findAllRoles().then(([roles]) => {
-      const roleArray = roles.map(({ id, title }) => ({
-        name: title,
+      const roleArray = roles.map(({ id, role }) => ({
+        name: role,
         value: id,
       }));
       prompt({
@@ -153,27 +157,22 @@ const addEmployee = () => {
         message: "What is the new employees role?",
         choices: roleArray,
       }).then((newEmployeeRole) => {
-        db.findAllEmployees()
-          .then(([employees]) => {
-            const managerArray = employees.map(
-              ({ id, first_name, last_name }) => ({
-                name: `${first_name} ${last_name}`,
-                value: id,
-              })
-            );
+        db.findAllEmployees().then(([employees]) => {
+          const managerArray = employees.map(({ id, employee }) => ({
+            name: employee,
+            value: id,
+          }));
 
-            managerArray.unshift({ name: "None", value: null });
+          managerArray.unshift({ name: "None", value: null });
 
-            prompt([
-              {
-                type: "list",
-                name: "manager",
-                message: "Who is the manager for this Employee?",
-                choices: managerArray,
-              },
-            ]);
-          })
-          .then((newEmployeeManager) => {
+          prompt([
+            {
+              type: "list",
+              name: "manager",
+              message: "Who is the manager for this Employee?",
+              choices: managerArray,
+            },
+          ]).then((newEmployeeManager) => {
             let employee = {
               manager_id: newEmployeeManager.manager,
               role_id: newEmployeeRole.roleId,
@@ -188,12 +187,89 @@ const addEmployee = () => {
               )
               .then(() => inquirerPrompts());
           });
+        });
       });
     });
   });
 };
-const updateEmployee = () => {};
-
+const updateEmployeeManager = () => {
+  // grab all employees from database
+  db.findAllEmployees().then(([employees]) => {
+    const employeeArray = employees.map(({ id, employee }) => {
+      return { name: employee, value: id };
+    });
+    prompt([
+      {
+        type: "list",
+        name: "employeeId",
+        message: "Which employee do you want to update?",
+        choices: employeeArray,
+      },
+    ]).then(({ employeeId }) => {
+      db.findAllManagers(employeeId).then(([managers]) => {
+        const managerArray = managers.map(({ id, first_name, last_name }) => {
+          return { name: `${first_name} ${last_name}`, value: id };
+        });
+        prompt([
+          {
+            type: "list",
+            name: "managerId",
+            message: "Which manager do you want to assign?",
+            choices: managerArray,
+          },
+        ])
+          .then(({ managerId }) => {
+            db.updateEmployeeManager(employeeId, managerId);
+          })
+          .then(() => {
+            console.log("Update successful");
+          })
+          .then(() => {
+            inquirerPrompts();
+          });
+      });
+    });
+  });
+};
+const updateEmployeeRole = () => {
+  // grab all employees from database
+  db.findAllEmployees().then(([employees]) => {
+    const employeeArray = employees.map(({ id, employee }) => {
+      return { name: employee, value: id };
+    });
+    prompt([
+      {
+        type: "list",
+        name: "employeeId",
+        message: "Which employee do you want to update?",
+        choices: employeeArray,
+      },
+    ]).then(({ employeeId }) => {
+      db.findAllRoles().then(([roles]) => {
+        const rolesArray = roles.map(({ id, role }) => {
+          return { name: role, value: id };
+        });
+        prompt([
+          {
+            type: "list",
+            name: "roleId",
+            message: "Which role do you want to reassign?",
+            choices: rolesArray,
+          },
+        ])
+          .then(({ roleId }) => {
+            db.updateEmployeeRole(employeeId, roleId);
+          })
+          .then(() => {
+            console.log("Update successful");
+          })
+          .then(() => {
+            inquirerPrompts();
+          });
+      });
+    });
+  });
+};
 const quitProgram = () => {
   console.log("Database Updated. Goodbye!");
   process.exit();
